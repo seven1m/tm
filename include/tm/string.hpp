@@ -425,6 +425,16 @@ public:
      *
      * ```
      * auto str = String { "🤖" }; // 4-byte emoji
+     * assert_eq(4, str.length());
+     * ```
+     */
+    size_t length() const { return m_length; }
+
+    /**
+     * Returns the number of bytes in the String.
+     *
+     * ```
+     * auto str = String { "🤖" }; // 4-byte emoji
      * assert_eq(4, str.size());
      * ```
      */
