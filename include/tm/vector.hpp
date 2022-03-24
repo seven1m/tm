@@ -220,7 +220,7 @@ public:
      * assert_eq('b', vec.at(1));
      * ```
      *
-     * If the vector is empty, then this method aborts.
+     * This method aborts if the index is past the end.
      *
      * ```should_abort
      * auto vec = Vector<char> {};
