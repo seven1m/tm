@@ -62,7 +62,7 @@ def run_test(bin_path, block)
       puts block[:code]
     end
     expect($?).wont_be :success?
-    expect(out).must_match /abort/i
+    expect(out).must_match /abort|assertion failed/i
   else
     puts out unless $?.success?
     expect($?).must_be :success?
