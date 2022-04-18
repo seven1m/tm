@@ -13,6 +13,12 @@ task :test do
   sh 'bundle exec ruby test/all.rb'
 end
 
+desc 'Run tests when files change (requires entr binary in path)'
+task :watch do
+  files = Rake::FileList['**/*.hpp']
+  sh "ls #{files} | entr -c -s 'rake test'"
+end
+
 desc 'Show line counts for the project'
 task :cloc do
   sh 'cloc include'
