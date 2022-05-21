@@ -42,6 +42,14 @@ end
 
 def add_block(file, block)
   code = block[:code].join("\n")
+  # HACK: This means all tests share the same top-level namespace,
+  # so any globals or function names will need to be unique.
+  # FIXME: Append a unique id on every global and function and do
+  # a find-replace in code. Yikes.
+  if code =~ %r{//\s*top\-level}
+    top_level_code, code = code.split(%r{// end-top-level.*})
+    file.puts(top_level_code)
+  end
   file.puts("void #{block[:name]}() {")
   file.puts(code)
   file.puts('}')
