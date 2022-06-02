@@ -130,7 +130,7 @@ public:
      * ptr.ref();
      * ```
      */
-    const T &ref() const {
+    T &ref() const {
         assert(m_ptr);
         return *m_ptr;
     }
