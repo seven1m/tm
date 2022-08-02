@@ -12,6 +12,7 @@ def comments_for_path(path)
       comments << {
         name: cursor.spelling,
         text: cursor.raw_comment_text,
+        line: cursor.location.line,
       }
     end
     next :recurse 
@@ -19,7 +20,7 @@ def comments_for_path(path)
   comments
 end
 
-def blocks_for_comment(comment, comment_index)
+def blocks_for_comment(comment)
   name = comment[:name]
   lines = comment[:text].split(/\n/)
   blocks = []
@@ -28,7 +29,7 @@ def blocks_for_comment(comment, comment_index)
     if line =~ /```(.*)/
       type = $1
       safe_name = name.gsub(/[^a-z0-9_]/i, '')
-      block = { name: "test_#{safe_name}_#{comment_index}_#{blocks.size}", type: type, code: [] }
+      block = { name: "test_#{safe_name}_#{comment[:line]}_#{blocks.size}", type: type, code: [] }
       while lines.any?
         line = lines.shift
         break if line =~ /```/
@@ -80,6 +81,8 @@ end
 describe 'inline doc tests' do
   parallelize_me!
 
+  seen_code = {}
+
   Dir['include/tm/*.hpp'].each do |path|
     filename = path.sub(/include\//, '')
     describe filename do
@@ -100,7 +103,10 @@ describe 'inline doc tests' do
       comments_for_path(path).each do |comment|
         name = comment[:name]
         describe name do
-          blocks_for_comment(comment, fn_index += 1).each do |block|
+          blocks_for_comment(comment).each do |block|
+            next if seen_code[block[:code]]
+            seen_code[block[:code]] = true
+
             add_block(cpp_file, block)
             fn_names << block[:name]
 

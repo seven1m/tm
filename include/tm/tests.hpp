@@ -3,47 +3,52 @@
 #include <iostream>
 #include <string.h>
 
-#define assert_eq(expected, actual)                                     \
-    {                                                                   \
-        auto e = (expected);                                            \
-        auto a = (actual);                                              \
-        if (a != e) {                                                   \
-            std::cerr << "\n"                                           \
-                      << "Expected " << a << " to equal " << e << "\n"; \
-            abort();                                                    \
-        }                                                               \
-    }
-
-#define assert_neq(a, b)                                                      \
-    {                                                                         \
-        auto a1 = (a);                                                        \
-        auto b1 = (b);                                                        \
-        if (a1 == b1) {                                                       \
-            std::cerr << "\n"                                                 \
-                      << "Expected " << a1 << " NOT to equal " << b1 << "\n"; \
-            abort();                                                          \
-        }                                                                     \
-    }
-
-#define assert_not(result)                                     \
+#define assert_eq(expected, actual)                            \
     {                                                          \
-        auto r = (result);                                     \
-        if (r) {                                               \
+        auto e = (expected);                                   \
+        auto a = (actual);                                     \
+        if (a != e) {                                          \
             std::cerr << "\n"                                  \
-                      << "Expected " << r << " to be false\n"; \
+                      << "Expected " << a << " to equal " << e \
+                      << " (" << __func__ << ")\n";            \
             abort();                                           \
         }                                                      \
     }
 
-#define assert_str_eq(expected, actual)                                                 \
-    {                                                                                   \
-        auto e = (expected);                                                            \
-        auto a = (actual);                                                              \
-        if (a != e) {                                                                   \
-            std::cerr << "\n"                                                           \
-                      << "Expected \"" << a.c_str() << "\" to equal \"" << e << "\"\n"; \
-            abort();                                                                    \
-        }                                                                               \
+#define assert_neq(a, b)                                             \
+    {                                                                \
+        auto a1 = (a);                                               \
+        auto b1 = (b);                                               \
+        if (a1 == b1) {                                              \
+            std::cerr << "\n"                                        \
+                      << "Expected " << a1 << " NOT to equal " << b1 \
+                      << " (" << __func__ << ")\n";                  \
+            abort();                                                 \
+        }                                                            \
+    }
+
+#define assert_not(result)                                  \
+    {                                                       \
+        auto r = (result);                                  \
+        if (r) {                                            \
+            std::cerr << "\n"                               \
+                      << "Expected " << r << " to be false" \
+                      << " (" << __func__ << ")\n";         \
+            abort();                                        \
+        }                                                   \
+    }
+
+#define assert_str_eq(expected, actual)                                                \
+    {                                                                                  \
+        auto e = (expected);                                                           \
+        auto a = (actual);                                                             \
+        if (a != e) {                                                                  \
+            auto str = a.clone();                                                      \
+            std::cerr << "\n"                                                          \
+                      << "Expected \"" << str.c_str() << "\" to equal \"" << e << "\"" \
+                      << " (" << __func__ << ")\n";                                    \
+            abort();                                                                   \
+        }                                                                              \
     }
 
 class Thing {
