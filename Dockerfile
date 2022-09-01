@@ -1,4 +1,4 @@
-ARG IMAGE=ruby:3.0
+ARG IMAGE=ruby:3.1
 FROM $IMAGE
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q build-essential clang libclang-dev
