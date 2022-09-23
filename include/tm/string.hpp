@@ -1405,7 +1405,7 @@ public:
         return index + 1;
     }
 
-private:
+protected:
     void grow(size_t new_capacity) {
         assert(new_capacity >= m_length);
         auto old_str = m_str;
