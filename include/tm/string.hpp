@@ -99,7 +99,7 @@ public:
      */
     String(char c) {
         char buf[2] = { c, 0 };
-        set_str(buf);
+        set_str(buf, 1);
     }
 
     /**
@@ -112,6 +112,10 @@ public:
      * ```
      */
     String(size_t length, char c) {
+        if (length == 0) {
+            set_str("", 0);
+            return;
+        }
         char buf[length];
         memset(buf, c, sizeof(char) * length);
         set_str(buf, length);
@@ -225,7 +229,10 @@ public:
      * ```
      */
     String &operator=(const String &other) {
-        set_str(other.c_str(), other.size());
+        if (m_str == other.m_str)
+            m_length = other.m_length;
+        else
+            set_str(other.c_str(), other.size());
         return *this;
     }
 
@@ -481,13 +488,11 @@ public:
      */
     void set_str(const char *str) {
         assert(str);
-        auto old_str = m_str;
         m_length = strlen(str);
         m_capacity = m_length;
+        delete[] m_str;
         m_str = new char[m_length + 1];
         memcpy(m_str, str, sizeof(char) * (m_length + 1));
-        if (old_str)
-            delete[] old_str;
     }
 
     /**
@@ -508,14 +513,12 @@ public:
      */
     void set_str(const char *str, size_t length) {
         assert(str);
-        auto old_str = m_str;
+        delete[] m_str;
         m_str = new char[length + 1];
         memcpy(m_str, str, sizeof(char) * length);
         m_str[length] = 0;
         m_length = length;
         m_capacity = length;
-        if (old_str)
-            delete[] old_str;
     }
 
     /**
@@ -1127,7 +1130,7 @@ public:
      * assert_str_eq("d000", String("c999").successive());
      * ```
      */
-    String successive() {
+    String successive() const {
         auto result = String { *this };
         assert(m_length > 0);
         size_t index = size() - 1;
