@@ -631,11 +631,13 @@ public:
      * assert_str_eq("foo-b-baz", str);
      * str.replace_chars(4, 1, "bar");
      * assert_str_eq("foo-bar-baz", str);
+     * str.replace_chars(10, 1, "a");
+     * assert_str_eq("foo-bar-baa", str);
      * ```
      */
     void replace_chars(size_t index, size_t length, String replacement) {
         assert(index < m_length);
-        assert(index + length < m_length);
+        assert(index + length <= m_length);
         ssize_t diff = replacement.size() - length;
         if (diff > 0)
             grow_at_least(m_length + diff);
