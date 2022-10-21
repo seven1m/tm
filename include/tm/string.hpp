@@ -621,6 +621,36 @@ public:
     }
 
     /**
+     * Replaces the specified index+size chars with the String given.
+     *
+     * ```
+     * auto str = String { "foo-bar-baz" };
+     * str.replace_chars(4, 3, "buz");
+     * assert_str_eq("foo-buz-baz", str);
+     * str.replace_chars(4, 3, "b");
+     * assert_str_eq("foo-b-baz", str);
+     * str.replace_chars(4, 1, "bar");
+     * assert_str_eq("foo-bar-baz", str);
+     * ```
+     */
+    void replace_chars(size_t index, size_t length, String replacement) {
+        assert(index < m_length);
+        assert(index + length < m_length);
+        ssize_t diff = replacement.size() - length;
+        if (diff > 0)
+            grow_at_least(m_length + diff);
+        if (diff != 0) {
+            auto src = index + length;
+            auto dest = src + diff;
+            memmove(m_str + dest, m_str + src, m_length - index - length);
+        }
+        for (size_t i = 0; i < replacement.size(); i++)
+            m_str[index + i] = replacement[i];
+        m_length += diff;
+        m_str[m_length] = 0;
+    }
+
+    /**
      * Adds the given character at the end of the string.
      *
      * ```
@@ -1086,7 +1116,7 @@ public:
     }
 
     /**
-     * Finds the given charcter inside this String and return its starting index.
+     * Finds the given character inside this String and return its starting index.
      * If not found, return -1.
      *
      * ```
