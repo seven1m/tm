@@ -621,21 +621,21 @@ public:
     }
 
     /**
-     * Replaces the specified index+size chars with the String given.
+     * Replaces the specified index+size bytes with the String given.
      *
      * ```
      * auto str = String { "foo-bar-baz" };
-     * str.replace_chars(4, 3, "buz");
+     * str.replace_bytes(4, 3, "buz");
      * assert_str_eq("foo-buz-baz", str);
-     * str.replace_chars(4, 3, "b");
+     * str.replace_bytes(4, 3, "b");
      * assert_str_eq("foo-b-baz", str);
-     * str.replace_chars(4, 1, "bar");
+     * str.replace_bytes(4, 1, "bar");
      * assert_str_eq("foo-bar-baz", str);
-     * str.replace_chars(10, 1, "a");
+     * str.replace_bytes(10, 1, "a");
      * assert_str_eq("foo-bar-baa", str);
      * ```
      */
-    void replace_chars(size_t index, size_t length, String replacement) {
+    void replace_bytes(size_t index, size_t length, String replacement) {
         assert(index < m_length);
         assert(index + length <= m_length);
         ssize_t diff = replacement.size() - length;
