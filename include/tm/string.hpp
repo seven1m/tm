@@ -140,6 +140,39 @@ public:
      * Constructs a new String by converting the given number.
      *
      * ```
+     * auto str = String { (unsigned long long)10 };
+     * assert_str_eq("10", str);
+     * ```
+     */
+
+    String(unsigned long long number) {
+        int length = snprintf(NULL, 0, "%llu", number);
+        char buf[length + 1];
+        snprintf(buf, length + 1, "%llu", number);
+        set_str(buf);
+    }
+
+    /**
+     * Constructs a new String by converting the given number.
+     *
+     * ```
+     * auto str = String { (unsigned long int)10 };
+     * auto str2 = String { (long int)10 };
+     * assert_str_eq("10", str);
+     * assert_str_eq("10", str2);
+     * ```
+     */
+    String(long int number) {
+        int length = snprintf(NULL, 0, "%li", number);
+        char buf[length + 1];
+        snprintf(buf, length + 1, "%li", number);
+        set_str(buf);
+    }
+
+    /**
+     * Constructs a new String by converting the given number.
+     *
+     * ```
      * auto str = String { (int)10 };
      * assert_str_eq("10", str);
      * ```
@@ -148,6 +181,36 @@ public:
         int length = snprintf(NULL, 0, "%d", number);
         char buf[length + 1];
         snprintf(buf, length + 1, "%d", number);
+        set_str(buf);
+    }
+
+    /**
+     * Constructs a new String by converting the given number.
+     *
+     * ```
+     * auto str = String { (unsigned long)10 };
+     * assert_str_eq("10", str);
+     * ```
+     */
+    String(unsigned long number) {
+        int length = snprintf(NULL, 0, "%lu", number);
+        char buf[length + 1];
+        snprintf(buf, length + 1, "%lu", number);
+        set_str(buf);
+    }
+
+    /**
+     * Constructs a new String by converting the given number.
+     *
+     * ```
+     * auto str = String { (unsigned int)10 };
+     * assert_str_eq("10", str);
+     * ```
+     */
+    String(unsigned int number) {
+        int length = snprintf(NULL, 0, "%u", number);
+        char buf[length + 1];
+        snprintf(buf, length + 1, "%u", number);
         set_str(buf);
     }
 
