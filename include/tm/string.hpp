@@ -1452,12 +1452,12 @@ public:
 
     /**
      * Returns a new String by appending the given arguments according
-     * to the given format. This is a safer version of of String::sprintf
+     * to the given format. This is a safer version of String::sprintf
      * that does not rely on format specifiers matching the argument type.
      *
      * ```
      * auto cstr = "hello";
-     * unsigned char c = 'w'; // must specify signed or unsigned char
+     * char c = 'w';
      * int num = 999;
      * auto str = String::format("{} {}orld {}", cstr, c, num);
      * assert_str_eq("hello world 999", str);
@@ -1480,9 +1480,8 @@ public:
     static void format(String &out, const char *fmt, T first, Args... rest) {
         for (const char *c = fmt; *c != 0; c++) {
             if (*c == '{' && *(c + 1) == '}') {
-                c++;
                 out.append(first);
-                format(out, c + 1, rest...);
+                format(out, c + 2, rest...);
                 return;
             } else {
                 out.append_char(*c);
