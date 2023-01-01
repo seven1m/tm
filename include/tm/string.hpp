@@ -1435,7 +1435,7 @@ public:
      */
     String successive() const {
         auto result = String { *this };
-        assert(m_length > 0);
+        if (m_length == 0) return result;
         size_t index = size() - 1;
         char last_char = m_str[index];
         if (last_char == 'z') {
