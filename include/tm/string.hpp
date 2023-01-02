@@ -643,7 +643,7 @@ public:
      * ```
      */
     void prepend_char(char c) {
-        size_t total_length = m_length + 1;
+        const size_t total_length = m_length + 1;
         grow_at_least(total_length);
         memmove(m_str + 1, m_str, m_length + 1); // 1 extra for null terminator
         m_str[0] = c;
@@ -660,7 +660,7 @@ public:
      * ```
      */
     void prepend(long long i) {
-        int length = snprintf(NULL, 0, "%lli", i);
+        const int length = snprintf(NULL, 0, "%lli", i);
         char buf[length + 1];
         snprintf(buf, length + 1, "%lli", i);
         prepend(buf);
@@ -677,7 +677,7 @@ public:
      */
     void prepend(const char *str) {
         if (!str) return;
-        size_t new_length = strlen(str);
+        const size_t new_length = strlen(str);
         if (new_length == 0) return;
         char buf[m_length + 1];
         memcpy(buf, c_str(), sizeof(char) * (m_length + 1));
@@ -696,7 +696,7 @@ public:
      * ```
      */
     void prepend(const String &str) {
-        size_t new_length = str.size();
+        const size_t new_length = str.size();
         if (new_length == 0) return;
         char buf[new_length + m_length + 1];
         memcpy(buf, str.c_str(), sizeof(char) * new_length);
