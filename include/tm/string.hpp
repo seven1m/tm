@@ -679,10 +679,10 @@ public:
         if (!str) return;
         const size_t new_length = strlen(str);
         if (new_length == 0) return;
-        char buf[m_length + 1];
-        memcpy(buf, c_str(), sizeof(char) * (m_length + 1));
-        set_str(str);
-        append(buf);
+        grow_at_least(new_length + m_length);
+        memmove(m_str + new_length, m_str, sizeof(char) * (new_length + 1));
+        memcpy(m_str, str, sizeof(char) * new_length);
+        m_length += new_length;
     }
 
     /**
@@ -698,10 +698,10 @@ public:
     void prepend(const String &str) {
         const size_t new_length = str.size();
         if (new_length == 0) return;
-        char buf[new_length + m_length + 1];
-        memcpy(buf, str.c_str(), sizeof(char) * new_length);
-        memcpy(buf + new_length, c_str(), sizeof(char) * (m_length + 1));
-        set_str(buf);
+        grow_at_least(new_length + m_length);
+        memmove(m_str + new_length, m_str, sizeof(char) * (m_length + 1));
+        memcpy(m_str, str.c_str(), sizeof(char) * new_length);
+        m_length += new_length;
     }
 
     /**
