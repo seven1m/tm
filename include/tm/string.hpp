@@ -619,6 +619,12 @@ public:
      */
     void set_str(const char *str, size_t length) {
         assert(str);
+        if (m_capacity > 0 && length <= m_capacity) {
+            memcpy(m_str, str, sizeof(char) * length);
+            m_str[length] = 0;
+            m_length = length;
+            return;
+        }
         delete[] m_str;
         m_str = new char[length + 1];
         memcpy(m_str, str, sizeof(char) * length);
