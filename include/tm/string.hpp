@@ -598,12 +598,7 @@ public:
      * ```
      */
     void set_str(const char *str) {
-        assert(str);
-        m_length = strlen(str);
-        m_capacity = m_length;
-        delete[] m_str;
-        m_str = new char[m_length + 1];
-        memcpy(m_str, str, sizeof(char) * (m_length + 1));
+        set_str(str, strlen(str));
     }
 
     /**
