@@ -35,7 +35,7 @@ public:
      * assert_neq(str.c_str(), cstr);
      * ```
      */
-    String(const char *str) {
+    String(const char *const str) {
         assert(str);
         set_str(str);
     }
@@ -55,7 +55,7 @@ public:
      * assert_eq('r', str[6]);
      * ```
      */
-    String(const char *str, size_t length) {
+    String(const char *const str, const size_t length) {
         assert(str);
         set_str(str, length);
     }
@@ -105,7 +105,7 @@ public:
      * assert_str_eq("foo", str2);
      * ```
      */
-    String(const String *other) {
+    String(const String *const other) {
         assert(other);
         set_str(other->c_str(), other->size());
     }
@@ -118,8 +118,8 @@ public:
      * assert_str_eq("x", str);
      * ```
      */
-    String(char c) {
-        char buf[2] = { c, 0 };
+    String(const char c) {
+        const char buf[2] = { c, 0 };
         set_str(buf, 1);
     }
 
@@ -132,7 +132,7 @@ public:
      * assert_str_eq("xxxxxxxxxx", str);
      * ```
      */
-    String(size_t length, char c) {
+    String(const size_t length, const char c) {
         if (length == 0) {
             set_str("", 0);
             return;
@@ -150,8 +150,8 @@ public:
      * assert_str_eq("10", str);
      * ```
      */
-    String(long long number) {
-        int length = snprintf(NULL, 0, "%lli", number);
+    String(const long long number) {
+        const int length = snprintf(NULL, 0, "%lli", number);
         char buf[length + 1];
         snprintf(buf, length + 1, "%lli", number);
         set_str(buf);
@@ -166,8 +166,8 @@ public:
      * ```
      */
 
-    String(unsigned long long number) {
-        int length = snprintf(NULL, 0, "%llu", number);
+    String(const unsigned long long number) {
+        const int length = snprintf(NULL, 0, "%llu", number);
         char buf[length + 1];
         snprintf(buf, length + 1, "%llu", number);
         set_str(buf);
@@ -183,8 +183,8 @@ public:
      * assert_str_eq("10", str2);
      * ```
      */
-    String(long int number) {
-        int length = snprintf(NULL, 0, "%li", number);
+    String(const long int number) {
+        const int length = snprintf(NULL, 0, "%li", number);
         char buf[length + 1];
         snprintf(buf, length + 1, "%li", number);
         set_str(buf);
@@ -198,8 +198,8 @@ public:
      * assert_str_eq("10", str);
      * ```
      */
-    String(int number) {
-        int length = snprintf(NULL, 0, "%d", number);
+    String(const int number) {
+        const int length = snprintf(NULL, 0, "%d", number);
         char buf[length + 1];
         snprintf(buf, length + 1, "%d", number);
         set_str(buf);
@@ -213,8 +213,8 @@ public:
      * assert_str_eq("10", str);
      * ```
      */
-    String(unsigned long number) {
-        int length = snprintf(NULL, 0, "%lu", number);
+    String(const unsigned long number) {
+        const int length = snprintf(NULL, 0, "%lu", number);
         char buf[length + 1];
         snprintf(buf, length + 1, "%lu", number);
         set_str(buf);
@@ -228,8 +228,8 @@ public:
      * assert_str_eq("10", str);
      * ```
      */
-    String(unsigned int number) {
-        int length = snprintf(NULL, 0, "%u", number);
+    String(const unsigned int number) {
+        const int length = snprintf(NULL, 0, "%u", number);
         char buf[length + 1];
         snprintf(buf, length + 1, "%u", number);
         set_str(buf);
@@ -251,8 +251,8 @@ public:
      * assert_str_eq("4.1", str);
      * ```
      */
-    String(double number, int precision = 4) {
-        int length = snprintf(NULL, 0, "%.*f", precision, number);
+    String(const double number, const int precision = 4) {
+        const int length = snprintf(NULL, 0, "%.*f", precision, number);
         char buf[length + 1];
         snprintf(buf, length + 1, "%.*f", precision, number);
         set_str(buf);
@@ -286,11 +286,11 @@ public:
      * assert_str_eq("fe", str);
      * ```
      */
-    static String hex(long long number, HexFormat format = HexFormat::UppercaseAndPrefixed) {
-        bool uppercase = format == HexFormat::UppercaseAndPrefixed || format == HexFormat::Uppercase;
-        bool prefixed = format == HexFormat::UppercaseAndPrefixed || format == HexFormat::LowercaseAndPrefixed;
+    static String hex(const long long number, HexFormat format = HexFormat::UppercaseAndPrefixed) {
+        const bool uppercase = format == HexFormat::UppercaseAndPrefixed || format == HexFormat::Uppercase;
+        const bool prefixed = format == HexFormat::UppercaseAndPrefixed || format == HexFormat::LowercaseAndPrefixed;
         const char *format_str = uppercase ? "%llX" : "%llx";
-        int length = snprintf(NULL, 0, format_str, number);
+        const int length = snprintf(NULL, 0, format_str, number);
         char buf[length + 1];
         snprintf(buf, length + 1, format_str, number);
         auto str = String(buf);
@@ -373,7 +373,7 @@ public:
      * assert_str_eq("foo", str);
      * ```
      */
-    String &operator=(const char *other) {
+    String &operator=(const char *const other) {
         if (other[0] == '\0') {
             truncate(0);
             return *this;
@@ -397,7 +397,7 @@ public:
      * str.at(10);
      * ```
      */
-    char at(size_t index) const {
+    char at(const size_t index) const {
         assert(index < m_length);
         return m_str[index];
     }
@@ -413,7 +413,7 @@ public:
      * WARNING: This method does *not* check that the given
      * index is within the bounds of the string data!
      */
-    char operator[](size_t index) const {
+    char operator[](const size_t index) const {
         return m_str[index];
     }
 
@@ -436,7 +436,7 @@ public:
      * WARNING: This method does *not* check that the given
      * index is within the bounds of the string data!
      */
-    char &operator[](size_t index) {
+    char &operator[](const size_t index) {
         return m_str[index];
     }
 
@@ -518,7 +518,7 @@ public:
      * str.substring(1, 3);
      * ```
      */
-    String substring(size_t start, size_t length) const {
+    String substring(const size_t start, const size_t length) const {
         assert(start < m_length);
         assert(start + length <= m_length);
         return String(c_str() + start, length);
@@ -542,7 +542,7 @@ public:
      * str.substring(3);
      * ```
      */
-    String substring(size_t start) const {
+    String substring(const size_t start) const {
         return substring(start, m_length - start);
     }
 
@@ -597,7 +597,7 @@ public:
      * assert_str_eq("xyz", str);
      * ```
      */
-    void set_str(const char *str) {
+    void set_str(const char *const str) {
         set_str(str, strlen(str));
     }
 
@@ -617,7 +617,7 @@ public:
      * assert_eq('i', str[6]);
      * ```
      */
-    void set_str(const char *str, size_t length) {
+    void set_str(const char *const str, const size_t length) {
         assert(str);
         if (m_capacity > 0 && length <= m_capacity) {
             memcpy(m_str, str, sizeof(char) * length);
@@ -643,7 +643,7 @@ public:
      * assert_str_eq("123", str);
      * ```
      */
-    void prepend_char(char c) {
+    void prepend_char(const char c) {
         const size_t total_length = m_length + 1;
         grow_at_least(total_length);
         memmove(m_str + 1, m_str, m_length + 1); // 1 extra for null terminator
@@ -676,7 +676,7 @@ public:
      * assert_str_eq("abcdef", str);
      * ```
      */
-    void prepend(const char *str) {
+    void prepend(const char *const str) {
         if (!str) return;
         const size_t new_length = strlen(str);
         if (new_length == 0) return;
@@ -723,10 +723,10 @@ public:
      * str.insert(3, '-');
      * ```
      */
-    void insert(size_t index, char c) {
+    void insert(const size_t index, const char c) {
         assert(index < m_length);
         grow_at_least(m_length + 1);
-        size_t nbytes = m_length - index + 1; // 1 extra for null terminator
+        const size_t nbytes = m_length - index + 1; // 1 extra for null terminator
         memmove(m_str + index + 1, m_str + index, nbytes);
         m_str[index] = c;
         m_length++;
@@ -747,15 +747,15 @@ public:
      * assert_str_eq("foo-bar-baa", str);
      * ```
      */
-    void replace_bytes(size_t index, size_t length, String replacement) {
+    void replace_bytes(const size_t index, const size_t length, const String &replacement) {
         assert(index < m_length);
         assert(index + length <= m_length);
-        ssize_t diff = replacement.size() - length;
+        const ssize_t diff = replacement.size() - length;
         if (diff > 0)
             grow_at_least(m_length + diff);
         if (diff != 0) {
-            auto src = index + length;
-            auto dest = src + diff;
+            const auto src = index + length;
+            const auto dest = src + diff;
             memmove(m_str + dest, m_str + src, m_length - index - length);
         }
         for (size_t i = 0; i < replacement.size(); i++)
@@ -773,8 +773,8 @@ public:
      * assert_str_eq("abc", str);
      * ```
      */
-    void append_char(char c) {
-        size_t total_length = m_length + 1;
+    void append_char(const char c) {
+        const size_t total_length = m_length + 1;
         grow_at_least(total_length);
         m_str[total_length - 1] = c;
         m_str[total_length] = 0;
@@ -790,8 +790,8 @@ public:
      * assert_str_eq("abc", str);
      * ```
      */
-    void append(signed char c) {
-        size_t total_length = m_length + 1;
+    void append(const signed char c) {
+        const size_t total_length = m_length + 1;
         grow_at_least(total_length);
         m_str[total_length - 1] = c;
         m_str[total_length] = 0;
@@ -807,8 +807,8 @@ public:
      * assert_str_eq("abc", str);
      * ```
      */
-    void append(unsigned char c) {
-        append(static_cast<signed char>(c));
+    void append(const unsigned char c) {
+        append(static_cast<const signed char>(c));
     }
 
     /**
@@ -820,8 +820,8 @@ public:
      * assert_str_eq("abc", str);
      * ```
      */
-    void append(char c) {
-        append(static_cast<signed char>(c));
+    void append(const char c) {
+        append(static_cast<const signed char>(c));
     }
 
     /**
@@ -833,8 +833,8 @@ public:
      * assert_str_eq("a123", str);
      * ```
      */
-    void append(size_t i) {
-        int length = snprintf(NULL, 0, "%zu", i);
+    void append(const size_t i) {
+        const int length = snprintf(NULL, 0, "%zu", i);
         char buf[length + 1];
         snprintf(buf, length + 1, "%zu", i);
         append(buf);
@@ -849,8 +849,8 @@ public:
      * assert_str_eq("a123", str);
      * ```
      */
-    void append(long long i) {
-        int length = snprintf(NULL, 0, "%lli", i);
+    void append(const long long i) {
+        const int length = snprintf(NULL, 0, "%lli", i);
         char buf[length + 1];
         snprintf(buf, length + 1, "%lli", i);
         append(buf);
@@ -865,8 +865,8 @@ public:
      * assert_str_eq("a123", str);
      * ```
      */
-    void append(int i) {
-        int length = snprintf(NULL, 0, "%i", i);
+    void append(const int i) {
+        const int length = snprintf(NULL, 0, "%i", i);
         char buf[length + 1];
         snprintf(buf, length + 1, "%i", i);
         append(buf);
@@ -881,9 +881,9 @@ public:
      * assert_str_eq("abc", str);
      * ```
      */
-    void append(const char *str) {
+    void append(const char *const str) {
         if (!str) return;
-        size_t length = strlen(str);
+        const size_t length = strlen(str);
         if (length == 0) return;
         append(str, length);
     }
@@ -903,10 +903,10 @@ public:
      * assert_eq('f', str[7]);
      * ```
      */
-    void append(const char *str, size_t length) {
+    void append(const char *const str, const size_t length) {
         if (!str) return;
         if (length == 0) return;
-        size_t total_length = m_length + length;
+        const size_t total_length = m_length + length;
         grow_at_least(total_length);
         memcpy(m_str + m_length, str, length);
         m_str[total_length] = 0;
@@ -925,7 +925,7 @@ public:
      * assert_str_eq("xyz1", str);
      * ```
      */
-    void append_sprintf(const char *format, ...) {
+    void append_sprintf(const char *const format, ...) {
         va_list args;
         va_start(args, format);
         append_vsprintf(format, args);
@@ -935,10 +935,10 @@ public:
     /**
      * Appends the given va_list args, formatting using the specified format.
      */
-    void append_vsprintf(const char *format, va_list args) {
+    void append_vsprintf(const char *const format, va_list args) {
         va_list args_copy;
         va_copy(args_copy, args);
-        int fmt_length = vsnprintf(nullptr, 0, format, args_copy);
+        const int fmt_length = vsnprintf(nullptr, 0, format, args_copy);
         va_end(args_copy);
         char buf[fmt_length + 1];
         vsnprintf(buf, fmt_length + 1, format, args);
@@ -957,7 +957,7 @@ public:
      */
     void append(const String &str) {
         if (str.size() == 0) return;
-        size_t total_length = m_length + str.size();
+        const size_t total_length = m_length + str.size();
         grow_at_least(total_length);
         memcpy(m_str + m_length, str.c_str(), sizeof(char) * str.size());
         m_length = total_length;
@@ -973,8 +973,8 @@ public:
      * assert_str_eq("xyy", str);
      * ```
      */
-    void append(size_t n, char c) {
-        size_t total_length = m_length + n;
+    void append(const size_t n, const char c) {
+        const size_t total_length = m_length + n;
         grow_at_least(total_length);
         memset(m_str + m_length, c, sizeof(char) * n);
         m_length = total_length;
@@ -1013,7 +1013,7 @@ public:
      * assert_not(str == cstr2);
      * ```
      */
-    bool operator==(const char *other) const {
+    bool operator==(const char *const other) const {
         assert(other);
         if (size() != strlen(other))
             return false;
@@ -1161,9 +1161,8 @@ public:
                 return 0;
             return -1;
         }
-        size_t i;
-        for (i = 0; i < std::min(m_length, other.m_length); ++i) {
-            auto c1 = (unsigned char)(*this)[i], c2 = (unsigned char)other[i];
+        for (size_t i = 0; i < std::min(m_length, other.m_length); ++i) {
+            const auto c1 = (unsigned char)(*this)[i], c2 = (unsigned char)other[i];
             if (c1 < c2)
                 return -1;
             else if (c1 > c2)
@@ -1201,9 +1200,8 @@ public:
             return -1;
         }
         auto lower = [&](char c) { return c >= 'A' && c <= 'Z' ? c + 32 : c; };
-        size_t i;
-        for (i = 0; i < std::min(m_length, other.m_length); ++i) {
-            auto c1 = lower((unsigned char)(*this)[i]), c2 = lower((unsigned char)other[i]);
+        for (size_t i = 0; i < std::min(m_length, other.m_length); ++i) {
+            const auto c1 = lower((unsigned char)(*this)[i]), c2 = lower((unsigned char)other[i]);
             if (c1 < c2)
                 return -1;
             else if (c1 > c2)
@@ -1233,8 +1231,8 @@ public:
         if (m_length < needle.size() || needle.is_empty())
             return -1;
         assert(m_str);
-        size_t max_index = m_length - needle.size();
-        size_t byte_count = sizeof(char) * needle.size();
+        const size_t max_index = m_length - needle.size();
+        const size_t byte_count = sizeof(char) * needle.size();
         for (size_t index = 0; index <= max_index; ++index) {
             if (memcmp(m_str + index, needle.c_str(), byte_count) == 0)
                 return index;
@@ -1276,7 +1274,7 @@ public:
      * str.truncate(4);
      * ```
      */
-    void truncate(size_t length) {
+    void truncate(const size_t length) {
         assert(length <= m_length);
         if (length == 0) {
             delete[] m_str;
@@ -1372,10 +1370,9 @@ public:
      * assert_str_eq("bcbc", str);
      * ```
      */
-    void remove(char character) {
-        size_t i;
+    void remove(const char character) {
         assert(m_str);
-        for (i = 0; i < m_length; ++i) {
+        for (size_t i = 0; i < m_length; ++i) {
             if (m_str[i] == character) {
                 for (size_t j = i; j < m_length; ++j)
                     m_str[j] = m_str[j + 1];
@@ -1437,8 +1434,8 @@ public:
     String successive() const {
         auto result = String { *this };
         if (m_length == 0) return result;
-        size_t index = size() - 1;
-        char last_char = m_str[index];
+        const size_t index = size() - 1;
+        const char last_char = m_str[index];
         if (last_char == 'z') {
             result.increment_successive_char('a', 'z', 'a');
         } else if (last_char == 'Z') {
@@ -1465,7 +1462,7 @@ public:
      * ```
      */
     template <typename... Args>
-    static String format(const char *fmt, Args... args) {
+    static String format(const char *const fmt, Args... args) {
         String out {};
         format(out, fmt, args...);
         return out;
@@ -1709,7 +1706,7 @@ public:
     }
 
 protected:
-    void grow(size_t new_capacity) {
+    void grow(const size_t new_capacity) {
         assert(new_capacity >= m_length);
         auto old_str = m_str;
         m_str = new char[new_capacity + 1];
@@ -1721,7 +1718,7 @@ protected:
         m_capacity = new_capacity;
     }
 
-    void grow_at_least(size_t min_capacity) {
+    void grow_at_least(const size_t min_capacity) {
         if (m_capacity >= min_capacity) return;
         if (m_capacity > 0 && min_capacity <= m_capacity * STRING_GROW_FACTOR) {
             grow(m_capacity * STRING_GROW_FACTOR);
@@ -1730,7 +1727,7 @@ protected:
         }
     }
 
-    void increment_successive_char(char first_char_in_range, char last_char_in_range, char prepend_char_to_grow) {
+    void increment_successive_char(const char first_char_in_range, const char last_char_in_range, const char prepend_char_to_grow) {
         assert(m_length > 0);
         ssize_t index = m_length - 1;
         char last_char = m_str[index];
