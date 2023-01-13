@@ -58,7 +58,7 @@ def add_block(file, block)
 end
 
 def compile_to_binary(bin_path, cpp_path)
-  out = `c++ -g -fsanitize=address -std=c++17 -I include -x c++ -o #{bin_path} #{cpp_path}`
+  out = `c++ -g -Wall -Wextra -Werror -Wno-sign-compare -fsanitize=address -std=c++17 -I include -x c++ -o #{bin_path} #{cpp_path}`
   puts out unless $?.success?
   raise 'error compiling' unless $?.success?
 end
