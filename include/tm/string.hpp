@@ -821,7 +821,7 @@ public:
      * ```
      */
     void append(const unsigned char c) {
-        append(static_cast<const signed char>(c));
+        append(static_cast<signed char>(c));
     }
 
     /**
@@ -834,7 +834,7 @@ public:
      * ```
      */
     void append(const char c) {
-        append(static_cast<const signed char>(c));
+        append(static_cast<signed char>(c));
     }
 
     /**
