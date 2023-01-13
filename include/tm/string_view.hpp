@@ -49,6 +49,7 @@ public:
      * ```should_abort
      * auto str = String("foo");
      * auto view = StringView(&str, 4);
+     * (void)view;
      * ```
      */
     explicit StringView(const String *string, size_t offset)
@@ -72,6 +73,7 @@ public:
      * ```should_abort
      * auto str = String("foobar");
      * auto view = StringView(&str, 3, 4);
+     * (void)view;
      * ```
      */
     explicit StringView(const String *string, size_t offset, size_t length)
