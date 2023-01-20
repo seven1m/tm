@@ -547,7 +547,7 @@ public:
     }
 
     /**
-     * Returns a const C string pointer to the internal data.
+     * Returns a C string pointer to the internal data.
      *
      * ```
      * auto str = String { "abc" };
@@ -556,19 +556,6 @@ public:
      * ```
      */
     const char *c_str() const { return m_str ? m_str : ""; }
-
-    /**
-     * Returns a mutable C string pointer to the internal data.
-     * Use this with extreme caution!
-     *
-     * ```
-     * auto str = String { "abc" };
-     * auto cstr = str.dangerous_pointer_to_underlying_data();
-     * cstr[1] = 'B';
-     * assert_eq(0, strcmp(cstr, "aBc"));
-     * ```
-     */
-    char *dangerous_pointer_to_underlying_data() const { return m_str; }
 
     /**
      * Returns the number of bytes in the String.
