@@ -694,7 +694,7 @@ public:
         const size_t new_length = strlen(str);
         if (new_length == 0) return;
         grow_at_least(new_length + m_length);
-        memmove(m_str + new_length, m_str, sizeof(char) * (new_length + 1));
+        memmove(m_str + new_length, m_str, sizeof(char) * (m_length + 1));
         memcpy(m_str, str, sizeof(char) * new_length);
         m_length += new_length;
     }
