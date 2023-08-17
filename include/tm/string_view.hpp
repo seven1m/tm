@@ -45,6 +45,20 @@ public:
         , m_length { string.length() } { }
 
     /**
+     * Constructs a basic StringView from a character pointer,
+     * uses strlen(3) to determine the length.
+     *
+     * ```
+     * const char *str = "foo";
+     * auto view = StringView(str);
+     * assert_eq(3, view.size());
+     * ```
+     */
+    explicit StringView(const char *string)
+        : m_string { string }
+        , m_length { strlen(string) } { }
+
+    /**
      * Constructs a StringView with given offset.
      *
      * ```
@@ -101,6 +115,35 @@ public:
     }
 
     /**
+     * Constructs a StringView with given offset from a character pointer,
+     * uses strlen(3) to determine the length.
+     *
+     * ```
+     * const char *str = "foobar";
+     * auto view = StringView(str, 3);
+     * assert_str_eq("bar", view);
+     *
+     * const char *str2 = "foo";
+     * auto view2 = StringView(str2, 3);
+     * assert_str_eq("", view2);
+     * ```
+     *
+     * This constructor aborts if the offset is past the end of the String.
+     *
+     * ```should_abort
+     * const char *str = "foo";
+     * auto view = StringView(str, 4);
+     * (void)view;
+     * ```
+     */
+    explicit StringView(const char *string, size_t offset)
+        : m_string { string }
+        , m_offset { offset }
+        , m_length { strlen(string) - offset } {
+        assert(offset <= strlen(string));
+    }
+
+    /**
      * Constructs a StringView with given offset and length.
      *
      * ```
@@ -149,6 +192,28 @@ public:
         assert(offset <= string.length());
         assert(length <= string.length() - offset);
     }
+
+    /**
+     * Constructs a StringView with given offset and length from a character pointer.
+     *
+     * ```
+     * const char *str = "foo-bar-baz";
+     * auto view = StringView(str, 4, 3);
+     * assert_str_eq("bar", view);
+     * ```
+     *
+     * This constructor does not check the lengths of the input string.
+     *
+     * ```
+     * const char *str = "foobar";
+     * auto view = StringView(str, 3, 4);
+     * (void)view;
+     * ```
+     */
+    explicit StringView(const char *string, size_t offset, size_t length)
+        : m_string { string }
+        , m_offset { offset }
+        , m_length { length } { }
 
     /**
      * Constructs a StringView by copying an existing StringView.
