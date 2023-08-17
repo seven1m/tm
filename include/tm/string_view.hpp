@@ -28,7 +28,7 @@ public:
      * ```
      */
     explicit StringView(const String *string)
-        : m_string { string }
+        : m_string { string->c_str() }
         , m_length { string->length() } { }
 
     /**
@@ -53,7 +53,7 @@ public:
      * ```
      */
     explicit StringView(const String *string, size_t offset)
-        : m_string { string }
+        : m_string { string->c_str() }
         , m_offset { offset }
         , m_length { string->length() - offset } {
         assert(offset <= string->length());
@@ -77,7 +77,7 @@ public:
      * ```
      */
     explicit StringView(const String *string, size_t offset, size_t length)
-        : m_string { string }
+        : m_string { string->c_str() }
         , m_offset { offset }
         , m_length { length } {
         assert(offset <= string->length());
@@ -173,7 +173,7 @@ public:
             return false;
         if (m_length != other_length)
             return false;
-        return memcmp(m_string->c_str() + m_offset, other, sizeof(char) * m_length) == 0;
+        return memcmp(m_string + m_offset, other, sizeof(char) * m_length) == 0;
     }
 
     bool operator!=(const char *other) const {
@@ -205,7 +205,7 @@ public:
             return false;
         if (m_length != other.m_length)
             return false;
-        return memcmp(m_string->c_str() + m_offset, other.m_string->c_str(), sizeof(char) * m_length) == 0;
+        return memcmp(m_string + m_offset, other.m_string, sizeof(char) * m_length) == 0;
     }
 
     bool operator!=(const StringView &other) const {
@@ -243,7 +243,7 @@ public:
     String to_string() const {
         if (!m_string)
             return String();
-        return String { m_string->c_str() + m_offset, m_length };
+        return String { m_string + m_offset, m_length };
     }
 
     /**
@@ -277,7 +277,8 @@ public:
      */
     char at(size_t index) const {
         assert(m_string);
-        return m_string->at(m_offset + index);
+        assert(index < m_length);
+        return m_string[m_offset + index];
     }
 
     /**
@@ -294,7 +295,7 @@ public:
      */
     char operator[](size_t index) const {
         assert(m_string);
-        return (*m_string)[m_offset + index];
+        return m_string[m_offset + index];
     }
 
     /**
@@ -312,7 +313,7 @@ public:
      */
     const char *dangerous_pointer_to_underlying_data() const {
         assert(m_string);
-        return (*m_string).c_str() + m_offset;
+        return m_string + m_offset;
     }
 
     /**
@@ -329,7 +330,7 @@ public:
     bool is_empty() const { return m_length == 0; }
 
 private:
-    const String *m_string { nullptr };
+    const char *m_string { nullptr };
     size_t m_offset { 0 };
     size_t m_length { 0 };
 };
