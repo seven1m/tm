@@ -16,7 +16,7 @@ ENV CC=$CC
 ARG CXX=g++
 ENV CXX=$CXX
 
-ENV LLVM_CONFIG=/usr/lib/llvm-11/bin/llvm-config
+ENV LLVM_CONFIG=/usr/lib/llvm-14/bin/llvm-config
 
 COPY Rakefile Rakefile
 COPY include include
