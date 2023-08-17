@@ -313,6 +313,28 @@ public:
     }
 
     /**
+     * Creates a new Hashmap from another Hashmap, and clear the input
+     *
+     * ```
+     * auto map1 = Hashmap<String, Thing>(HashType::TMString);
+     * map1.put("foo", Thing(1));
+     * auto map2 = Hashmap<String, Thing>(std::move(map1));
+     * assert_eq(Thing(1), map2.get("foo"));
+     * assert(map1.is_empty());
+     * ```
+     */
+    Hashmap(Hashmap &&other) {
+        m_size = other.m_size;
+        m_capacity = other.m_capacity;
+        m_map = other.m_map;
+        m_hash_fn = other.m_hash_fn;
+        m_compare_fn = other.m_compare_fn;
+        other.m_size = 0;
+        other.m_capacity = 0;
+        other.m_map = nullptr;
+    }
+
+    /**
      * Overwrites this Hashmap with another.
      *
      * ```
