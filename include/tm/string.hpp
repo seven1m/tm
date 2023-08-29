@@ -10,7 +10,7 @@
 
 namespace TM {
 
-class String {
+class String final {
 public:
     static constexpr int STRING_GROW_FACTOR = 2;
 
@@ -299,7 +299,7 @@ public:
         return str;
     }
 
-    virtual ~String() {
+    ~String() {
         delete[] m_str;
     }
 
