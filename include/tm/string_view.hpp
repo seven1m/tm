@@ -28,8 +28,35 @@ public:
      * ```
      */
     explicit StringView(const String *string)
-        : m_string { string }
+        : m_string { string->c_str() }
         , m_length { string->length() } { }
+
+    /**
+     * Constructs a basic StringView, pointing at the given String.
+     *
+     * ```
+     * auto str = String("foo");
+     * auto view = StringView(str);
+     * assert_eq(3, view.size());
+     * ```
+     */
+    explicit StringView(const String &string)
+        : m_string { string.c_str() }
+        , m_length { string.length() } { }
+
+    /**
+     * Constructs a basic StringView from a character pointer,
+     * uses strlen(3) to determine the length.
+     *
+     * ```
+     * const char *str = "foo";
+     * auto view = StringView(str);
+     * assert_eq(3, view.size());
+     * ```
+     */
+    explicit StringView(const char *string)
+        : m_string { string }
+        , m_length { strlen(string) } { }
 
     /**
      * Constructs a StringView with given offset.
@@ -53,10 +80,67 @@ public:
      * ```
      */
     explicit StringView(const String *string, size_t offset)
-        : m_string { string }
+        : m_string { string->c_str() }
         , m_offset { offset }
         , m_length { string->length() - offset } {
         assert(offset <= string->length());
+    }
+
+    /**
+     * Constructs a StringView with given offset.
+     *
+     * ```
+     * auto str = String("foobar");
+     * auto view = StringView(str, 3);
+     * assert_str_eq("bar", view);
+     *
+     * auto str2 = String("foo");
+     * auto view2 = StringView(str2, 3);
+     * assert_str_eq("", view2);
+     * ```
+     *
+     * This constructor aborts if the offset is past the end of the String.
+     *
+     * ```should_abort
+     * auto str = String("foo");
+     * auto view = StringView(str, 4);
+     * (void)view;
+     * ```
+     */
+    explicit StringView(const String &string, size_t offset)
+        : m_string { string.c_str() }
+        , m_offset { offset }
+        , m_length { string.length() - offset } {
+        assert(offset <= string.length());
+    }
+
+    /**
+     * Constructs a StringView with given offset from a character pointer,
+     * uses strlen(3) to determine the length.
+     *
+     * ```
+     * const char *str = "foobar";
+     * auto view = StringView(str, 3);
+     * assert_str_eq("bar", view);
+     *
+     * const char *str2 = "foo";
+     * auto view2 = StringView(str2, 3);
+     * assert_str_eq("", view2);
+     * ```
+     *
+     * This constructor aborts if the offset is past the end of the String.
+     *
+     * ```should_abort
+     * const char *str = "foo";
+     * auto view = StringView(str, 4);
+     * (void)view;
+     * ```
+     */
+    explicit StringView(const char *string, size_t offset)
+        : m_string { string }
+        , m_offset { offset }
+        , m_length { strlen(string) - offset } {
+        assert(offset <= strlen(string));
     }
 
     /**
@@ -77,7 +161,7 @@ public:
      * ```
      */
     explicit StringView(const String *string, size_t offset, size_t length)
-        : m_string { string }
+        : m_string { string->c_str() }
         , m_offset { offset }
         , m_length { length } {
         assert(offset <= string->length());
@@ -85,11 +169,58 @@ public:
     }
 
     /**
+     * Constructs a StringView with given offset and length.
+     *
+     * ```
+     * auto str = String("foo-bar-baz");
+     * auto view = StringView(str, 4, 3);
+     * assert_str_eq("bar", view);
+     * ```
+     *
+     * This constructor aborts if the length is too long.
+     *
+     * ```should_abort
+     * auto str = String("foobar");
+     * auto view = StringView(str, 3, 4);
+     * (void)view;
+     * ```
+     */
+    explicit StringView(const String &string, size_t offset, size_t length)
+        : m_string { string.c_str() }
+        , m_offset { offset }
+        , m_length { length } {
+        assert(offset <= string.length());
+        assert(length <= string.length() - offset);
+    }
+
+    /**
+     * Constructs a StringView with given offset and length from a character pointer.
+     *
+     * ```
+     * const char *str = "foo-bar-baz";
+     * auto view = StringView(str, 4, 3);
+     * assert_str_eq("bar", view);
+     * ```
+     *
+     * This constructor does not check the lengths of the input string.
+     *
+     * ```
+     * const char *str = "foobar";
+     * auto view = StringView(str, 3, 4);
+     * (void)view;
+     * ```
+     */
+    explicit StringView(const char *string, size_t offset, size_t length)
+        : m_string { string }
+        , m_offset { offset }
+        , m_length { length } { }
+
+    /**
      * Constructs a StringView by copying an existing StringView.
      *
      * ```
      * auto str = String("foo-bar-baz");
-     * auto view1 = StringView(&str, 4, 3);
+     * auto view1 = StringView(str, 4, 3);
      * auto view2 = StringView(view1);
      * assert_str_eq("bar", view2);
      * ```
@@ -101,9 +232,9 @@ public:
      *
      * ```
      * auto str1 = String("foo");
-     * auto view1 = StringView(&str1);
+     * auto view1 = StringView(str1);
      * auto str2 = String("bar");
-     * auto view2 = StringView(&str2);
+     * auto view2 = StringView(str2);
      * view1 = view2;
      * assert_str_eq("bar", view1);
      * ```
@@ -115,7 +246,7 @@ public:
      *
      * ```
      * auto str = String("foo-bar-baz");
-     * auto view = StringView(&str, 4);
+     * auto view = StringView(str, 4);
      * assert_eq(4, view.offset());
      * ```
      */
@@ -126,11 +257,11 @@ public:
      *
      * ```
      * auto str = String("🤖"); // 4-byte emoji
-     * auto view = StringView(&str);
+     * auto view = StringView(str);
      * assert_eq(4, view.size());
      *
      * auto str2 = String("foobar");
-     * auto view2 = StringView(&str2, 3);
+     * auto view2 = StringView(str2, 3);
      * assert_eq(3, view2.size());
      * ```
      */
@@ -141,11 +272,11 @@ public:
      *
      * ```
      * auto str = String("🤖"); // 4-byte emoji
-     * auto view = StringView(&str);
+     * auto view = StringView(str);
      * assert_eq(4, view.length());
      *
      * auto str2 = String("foobar");
-     * auto view2 = StringView(&str2, 3);
+     * auto view2 = StringView(str2, 3);
      * assert_eq(3, view2.length());
      * ```
      */
@@ -156,7 +287,7 @@ public:
      *
      * ```
      * auto str = String("abc");
-     * auto view = StringView(&str);
+     * auto view = StringView(str);
      * auto cstr1 = "abc";
      * assert(view == cstr1);
      * auto cstr2 = "xyz";
@@ -173,7 +304,7 @@ public:
             return false;
         if (m_length != other_length)
             return false;
-        return memcmp(m_string->c_str() + m_offset, other, sizeof(char) * m_length) == 0;
+        return memcmp(m_string + m_offset, other, sizeof(char) * m_length) == 0;
     }
 
     bool operator!=(const char *other) const {
@@ -185,12 +316,12 @@ public:
      *
      * ```
      * auto str1 = String("abc");
-     * auto view1 = StringView(&str1);
-     * auto view1b = StringView(&str1);
+     * auto view1 = StringView(str1);
+     * auto view1b = StringView(str1);
      * assert(view1 == view1b);
      *
      * auto str2 = String("xyz");
-     * auto view2 = StringView(&str2);
+     * auto view2 = StringView(str2);
      * assert_not(view1 == view2);
      *
      * assert(StringView() == StringView());
@@ -205,7 +336,7 @@ public:
             return false;
         if (m_length != other.m_length)
             return false;
-        return memcmp(m_string->c_str() + m_offset, other.m_string->c_str(), sizeof(char) * m_length) == 0;
+        return memcmp(m_string + m_offset, other.m_string, sizeof(char) * m_length) == 0;
     }
 
     bool operator!=(const StringView &other) const {
@@ -217,7 +348,7 @@ public:
      *
      * ```
      * auto str = String("abc");
-     * auto view = StringView(&str);
+     * auto view = StringView(str);
      * assert(view == str);
      * assert_not(view == String());
      * ```
@@ -235,7 +366,7 @@ public:
      *
      * ```
      * auto str = String("foo-bar-baz");
-     * auto view = StringView(&str, 4, 3);
+     * auto view = StringView(str, 4, 3);
      * auto str2 = view.to_string();
      * assert_str_eq("bar", str2);
      * ```
@@ -243,7 +374,7 @@ public:
     String to_string() const {
         if (!m_string)
             return String();
-        return String { m_string->c_str() + m_offset, m_length };
+        return String { m_string + m_offset, m_length };
     }
 
     /**
@@ -251,7 +382,7 @@ public:
      *
      * ```
      * auto str = String("foo-bar-baz");
-     * auto view = StringView(&str, 4, 3);
+     * auto view = StringView(str, 4, 3);
      * auto str2 = view.clone();
      * assert_str_eq("bar", str2);
      * ```
@@ -263,7 +394,7 @@ public:
      *
      * ```
      * auto str = String("foo-bar-baz");
-     * auto view = StringView(&str, 4, 3);
+     * auto view = StringView(str, 4, 3);
      * assert_eq('a', view.at(1));
      * ```
      *
@@ -271,13 +402,14 @@ public:
      *
      * ```should_abort
      * auto str = String("foo-bar-baz");
-     * auto view = StringView(&str, 4, 3);
+     * auto view = StringView(str, 4, 3);
      * view.at(10);
      * ```
      */
     char at(size_t index) const {
         assert(m_string);
-        return m_string->at(m_offset + index);
+        assert(index < m_length);
+        return m_string[m_offset + index];
     }
 
     /**
@@ -285,7 +417,7 @@ public:
      *
      * ```
      * auto str = String("foo-bar-baz");
-     * auto view = StringView(&str, 4, 3);
+     * auto view = StringView(str, 4, 3);
      * assert_eq('a', view[1]);
      * ```
      *
@@ -294,7 +426,7 @@ public:
      */
     char operator[](size_t index) const {
         assert(m_string);
-        return (*m_string)[m_offset + index];
+        return m_string[m_offset + index];
     }
 
     /**
@@ -306,13 +438,13 @@ public:
      *
      * ```
      * auto str = String("foo-bar-baz");
-     * auto view = StringView(&str, 4, 3);
+     * auto view = StringView(str, 4, 3);
      * assert_eq(0, strcmp("bar-baz", view.dangerous_pointer_to_underlying_data()));
      * ```
      */
     const char *dangerous_pointer_to_underlying_data() const {
         assert(m_string);
-        return (*m_string).c_str() + m_offset;
+        return m_string + m_offset;
     }
 
     /**
@@ -320,16 +452,16 @@ public:
      *
      * ```
      * auto str = String("abc");
-     * auto view1 = StringView(&str);
+     * auto view1 = StringView(str);
      * assert_not(view1.is_empty());
-     * auto view2 = StringView(&str, 0, 0);
+     * auto view2 = StringView(str, 0, 0);
      * assert(view2.is_empty());
      * ```
      */
     bool is_empty() const { return m_length == 0; }
 
 private:
-    const String *m_string { nullptr };
+    const char *m_string { nullptr };
     size_t m_offset { 0 };
     size_t m_length { 0 };
 };
