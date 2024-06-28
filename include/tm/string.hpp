@@ -845,6 +845,22 @@ public:
      *
      * ```
      * auto str = String { "a" };
+     * str.append((ssize_t)-123);
+     * assert_str_eq("a-123", str);
+     * ```
+     */
+    void append(const ssize_t i) {
+        const int length = snprintf(NULL, 0, "%zd", i);
+        char buf[length + 1];
+        snprintf(buf, length + 1, "%zd", i);
+        append(buf);
+    }
+
+    /**
+     * Converts the given number and append the resulting string.
+     *
+     * ```
+     * auto str = String { "a" };
      * str.append((long long)123);
      * assert_str_eq("a123", str);
      * ```
