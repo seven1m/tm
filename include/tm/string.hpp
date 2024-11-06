@@ -259,6 +259,34 @@ public:
         set_str(buf);
     }
 
+    /**
+     * Constructs a new String by taking ownership of a given buffer.
+     *
+     * ```
+     * auto buf = new char[12];
+     * strncpy(buf, "hello world", 12);
+     * auto str = String::create_and_take_ownership(buf, 11);
+     * assert_eq(11, str.size());
+     * assert_str_eq("hello world", str);
+     *
+     * // Changes in str will be reflected in buf
+     * str[0] = 'w';
+     * assert_eq('w', buf[0]);
+     *
+     * // Calling the destructor will free the buf
+     * str = String {};
+     * ```
+     */
+    static String create_and_take_ownership(char *buf, const size_t length) {
+        String result;
+        auto old_m_str = result.m_str;
+        result.m_str = buf;
+        result.m_length = length;
+        result.m_capacity = length;
+        delete[] old_m_str;
+        return result;
+    }
+
     enum class HexFormat {
         UppercaseAndPrefixed,
         Uppercase,
