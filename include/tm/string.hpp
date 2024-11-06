@@ -130,16 +130,17 @@ public:
      * ```
      * auto str = String { 10, 'x' };
      * assert_str_eq("xxxxxxxxxx", str);
+     * assert_eq(10, str.size());
+     *
+     * auto str2 = String { 0, 'y' };
+     * assert_str_eq("", str2);
+     * assert_eq(0, str2.size());
      * ```
      */
     String(const size_t length, const char c) {
-        if (length == 0) {
-            set_str("", 0);
-            return;
-        }
-        char buf[length];
-        memset(buf, c, sizeof(char) * length);
-        set_str(buf, length);
+        grow(length);
+        memset(m_str, c, sizeof(char) * length);
+        m_length = length;
     }
 
     /**
