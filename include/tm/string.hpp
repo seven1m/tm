@@ -1568,12 +1568,12 @@ public:
      * Returns true if this String ends with the given String.
      *
      * ```
-     * auto str = String("hello world");
+     * const auto str = String("hello world");
      * assert(str.ends_with("world"));
      * assert_not(str.ends_with("xxx"));
      * ```
      */
-    bool ends_with(const String &needle) {
+    bool ends_with(const String &needle) const {
         if (m_length < needle.m_length)
             return false;
         return memcmp(m_str + m_length - needle.m_length, needle.m_str, needle.m_length) == 0;
