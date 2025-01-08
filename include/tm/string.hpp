@@ -1569,14 +1569,33 @@ public:
      *
      * ```
      * const auto str = String("hello world");
-     * assert(str.ends_with("world"));
-     * assert_not(str.ends_with("xxx"));
+     * const auto world = String("world");
+     * const auto xxx = String("xxx");
+     * assert(str.ends_with(world));
+     * assert_not(str.ends_with(xxx));
      * ```
      */
     bool ends_with(const String &needle) const {
         if (m_length < needle.m_length)
             return false;
         return memcmp(m_str + m_length - needle.m_length, needle.m_str, needle.m_length) == 0;
+    }
+
+    /**
+     * Returns true if this String ends with the given C string, without
+     * converting it to a String first.
+     *
+     * ```
+     * const auto str = String("hello world");
+     * assert(str.ends_with("world"));
+     * assert_not(str.ends_with("xxx"));
+     * ```
+     */
+    bool ends_with(const char *needle) const {
+        const auto length = strlen(needle);
+        if (m_length < length)
+            return false;
+        return memcmp(m_str + m_length - length, needle, length) == 0;
     }
 
     /**
