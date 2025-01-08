@@ -108,7 +108,7 @@ public:
      * char list[] = { 'a', 'b', 'c', 'd', 'e' };
      * Span span1 { list, 5 };
      * span1.slice(2, 5);
-      * ```
+     * ```
      */
     Span slice(const size_t offset, size_t count = 0) const {
         assert(offset + count <= m_size);
