@@ -1568,9 +1568,9 @@ public:
      * Returns true if this String ends with the given String.
      *
      * ```
-     * const auto str = String("hello world");
-     * const auto world = String("world");
-     * const auto xxx = String("xxx");
+     * const auto str = String { "hello world" };
+     * const auto world = String { "world" };
+     * const auto xxx = String { "xxx" };
      * assert(str.ends_with(world));
      * assert_not(str.ends_with(xxx));
      * ```
@@ -1584,7 +1584,7 @@ public:
      * converting it to a String first.
      *
      * ```
-     * const auto str = String("hello world");
+     * const auto str = String { "hello world" };
      * assert(str.ends_with("world"));
      * assert_not(str.ends_with("xxx"));
      * ```
