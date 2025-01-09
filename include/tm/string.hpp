@@ -1568,17 +1568,15 @@ public:
      * Returns true if this String ends with the given String.
      *
      * ```
-     * const auto str = String("hello world");
-     * const auto world = String("world");
-     * const auto xxx = String("xxx");
+     * const auto str = String { "hello world" };
+     * const auto world = String { "world" };
+     * const auto xxx = String { "xxx" };
      * assert(str.ends_with(world));
      * assert_not(str.ends_with(xxx));
      * ```
      */
     bool ends_with(const String &needle) const {
-        if (m_length < needle.m_length)
-            return false;
-        return memcmp(m_str + m_length - needle.m_length, needle.m_str, needle.m_length) == 0;
+        return ends_with(needle.m_str, needle.m_length);
     }
 
     /**
@@ -1586,16 +1584,31 @@ public:
      * converting it to a String first.
      *
      * ```
-     * const auto str = String("hello world");
+     * const auto str = String { "hello world" };
      * assert(str.ends_with("world"));
      * assert_not(str.ends_with("xxx"));
      * ```
      */
     bool ends_with(const char *needle) const {
-        const auto length = strlen(needle);
-        if (m_length < length)
+        return ends_with(needle, strlen(needle));
+    }
+
+    /**
+     * Returns true if this String ends with the given C string, without
+     * converting it to a String first. Includes the size of the
+     *
+     * ```
+     * const auto str = String { "hello world" };
+     * assert(str.ends_with("world", 5));
+     * assert(str.ends_with("dog", 1));
+     * assert_not(str.ends_with("dog", 3));
+     * ```
+     */
+    inline bool ends_with(const char *needle, const size_t size) const {
+        assert(needle);
+        if (m_length < size)
             return false;
-        return memcmp(m_str + m_length - length, needle, length) == 0;
+        return memcmp(m_str + m_length - size, needle, size) == 0;
     }
 
     /**
