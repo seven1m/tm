@@ -351,6 +351,43 @@ public:
     }
 
     /**
+     * Concatenates (appends) a vector at the end
+     *
+     * ```
+     * auto vec = Vector<Thing> { Thing(1), Thing(2) };
+     * auto other_vec = Vector<Thing> { Thing(3), Thing(4) };
+     * vec.concat(other_vec);
+     * assert_eq(4, vec.size());
+     * assert_eq(1, vec[0].value());
+     * assert_eq(2, vec[1].value());
+     * assert_eq(3, vec[2].value());
+     * assert_eq(4, vec[3].value());
+     * ```
+     *
+     * It uses memcpy in case the value is trivially copyable
+     * ```
+     * auto vec = Vector<int> { 1, 2 };
+     * auto other_vec = Vector<int> { 3, 4 };
+     * vec.concat(other_vec);
+     * assert_eq(4, vec.size());
+     * assert_eq(1, vec[0]);
+     * assert_eq(2, vec[1]);
+     * assert_eq(3, vec[2]);
+     * assert_eq(4, vec[3]);
+     * ```
+     */
+    void concat(const Vector<T> &other) {
+        grow_at_least(m_size + other.size());
+        if constexpr (std::is_trivially_copyable<T>::value) {
+            memcpy(m_data + m_size, other.m_data, other.m_size * sizeof(T));
+            m_size += other.m_size;
+        } else {
+            for (auto &v : other)
+                push(v);
+        }
+    }
+
+    /**
      * Pushes (inserts) a value at the front (index 0).
      *
      * ```
