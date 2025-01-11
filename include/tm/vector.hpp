@@ -354,6 +354,7 @@ public:
      * Concatenates (appends) a vector at the end
      *
      * ```
+     * static_assert(!std::is_trivially_copyable<Thing>::value);
      * auto vec = Vector<Thing> { Thing(1), Thing(2) };
      * auto other_vec = Vector<Thing> { Thing(3), Thing(4) };
      * vec.concat(other_vec);
@@ -366,6 +367,7 @@ public:
      *
      * It uses memcpy in case the value is trivially copyable
      * ```
+     * static_assert(std::is_trivially_copyable<int>::value);
      * auto vec = Vector<int> { 1, 2 };
      * auto other_vec = Vector<int> { 3, 4 };
      * vec.concat(other_vec);
