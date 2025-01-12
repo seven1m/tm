@@ -390,6 +390,73 @@ public:
     }
 
     /**
+     * Concatenates (appends) a vector at the end
+     *
+     * ```
+     * static_assert(!std::is_trivially_copyable<Thing>::value);
+     * auto vec = Vector<Thing> { Thing(1), Thing(2) };
+     * auto other_vec = Vector<Thing> { Thing(3), Thing(4), Thing(5) };
+     * vec.concat_slice(other_vec, 1, 1);
+     * assert_eq(3, vec.size());
+     * assert_eq(1, vec[0].value());
+     * assert_eq(2, vec[1].value());
+     * assert_eq(4, vec[2].value());
+     * ```
+     *
+     * It uses memcpy in case the value is trivially copyable
+     * ```
+     * static_assert(std::is_trivially_copyable<int>::value);
+     * auto vec = Vector<int> { 1, 2 };
+     * auto other_vec = Vector<int> { 3, 4, 5 };
+     * vec.concat_slice(other_vec, 1, 1);
+     * assert_eq(3, vec.size());
+     * assert_eq(1, vec[0]);
+     * assert_eq(2, vec[1]);
+     * assert_eq(4, vec[2]);
+     * ```
+     *
+     * It does not change anything if the start is out of bounds or the count equals 0
+     * ```
+     * auto vec = Vector<int> { 1, 2 };
+     * auto other_vec = Vector<int> { 3, 4, 5 };
+     * vec.concat_slice(other_vec, 3, 1);
+     * assert_eq(2, vec.size());
+     * assert_eq(1, vec[0]);
+     * assert_eq(2, vec[1]);
+     *
+     * vec.concat_slice(other_vec, 0, 0);
+     * assert_eq(2, vec.size());
+     * assert_eq(1, vec[0]);
+     * assert_eq(2, vec[1]);
+     * ```
+     *
+     * It will not add more items than available
+     * ```
+     * auto vec = Vector<int> { 1, 2 };
+     * auto other_vec = Vector<int> { 3, 4, 5 };
+     * vec.concat_slice(other_vec, 2, 5);
+     * assert_eq(3, vec.size());
+     * assert_eq(1, vec[0]);
+     * assert_eq(2, vec[1]);
+     * assert_eq(5, vec[2]);
+     * ```
+     */
+    void concat_slice(const Vector<T> &other, const size_t start, size_t count) {
+        if (start >= other.size() || count == 0)
+            return;
+        if (start + count > other.size())
+            count = other.size() - start;
+        grow_at_least(m_size + count);
+        if constexpr (std::is_trivially_copyable<T>::value) {
+            memcpy(m_data + m_size, other.m_data + start, count * sizeof(T));
+            m_size += count;
+        } else {
+            for (size_t i = start; i < start + count; i++)
+                push(other[i]);
+        }
+    }
+
+    /**
      * Pushes (inserts) a value at the front (index 0).
      *
      * ```
