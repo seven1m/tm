@@ -1612,6 +1612,19 @@ public:
     }
 
     /**
+     * Returns true if this String begins with the given character.
+     *
+     * ```
+     * const auto str = String { "hello world" };
+     * assert(str.begins_with('h'));
+     * assert_not(str.begins_with('w'));
+     * ```
+     */
+    bool begins_with(const char c) const {
+        return m_length > 0 && m_str[0] == c;
+    }
+
+    /**
      * Returns true if this String ends with the given String.
      *
      * ```
@@ -1656,6 +1669,19 @@ public:
         if (m_length < size)
             return false;
         return memcmp(m_str + m_length - size, needle, size) == 0;
+    }
+
+    /**
+     * Returns true if this String ends with the given character.
+     *
+     * ```
+     * const auto str = String { "hello world" };
+     * assert(str.ends_with('d'));
+     * assert_not(str.ends_with('w'));
+     * ```
+     */
+    bool ends_with(const char c) const {
+        return m_length > 0 && m_str[m_length - 1] == c;
     }
 
     /**
