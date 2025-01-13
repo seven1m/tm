@@ -70,7 +70,7 @@ public:
     Vector(std::initializer_list<T> list)
         : m_capacity { list.size() }
         , m_data { array_of_size(list.size()) } {
-        for (auto v : list) {
+        for (const auto &v : list) {
             push(v);
         }
     }
