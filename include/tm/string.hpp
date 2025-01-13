@@ -1655,7 +1655,7 @@ public:
 
     /**
      * Returns true if this String ends with the given C string, without
-     * converting it to a String first. Includes the size of the
+     * converting it to a String first.
      *
      * ```
      * const auto str = String { "hello world" };
