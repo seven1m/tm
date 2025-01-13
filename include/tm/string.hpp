@@ -1565,6 +1565,66 @@ public:
     }
 
     /**
+     * Returns true if this String begins with the given String.
+     *
+     * ```
+     * const auto str = String { "hello world" };
+     * const auto hello = String { "hello" };
+     * const auto xxx = String { "xxx" };
+     * assert(str.begins_with(hello));
+     * assert_not(str.begins_with(xxx));
+     * ```
+     */
+    bool begins_with(const String &needle) const {
+        return begins_with(needle.m_str, needle.m_length);
+    }
+
+    /**
+     * Returns true if this String begins with the given C string, without
+     * converting it to a String first.
+     *
+     * ```
+     * const auto str = String { "hello world" };
+     * assert(str.begins_with("hello"));
+     * assert_not(str.begins_with("xxx"));
+     * ```
+     */
+    bool begins_with(const char *needle) const {
+        return begins_with(needle, strlen(needle));
+    }
+
+    /**
+     * Returns true if this String begins with the given C string, without
+     * converting it to a String first.
+     *
+     * ```
+     * const auto str = String { "hello world" };
+     * assert(str.begins_with("hello", 5));
+     * assert(str.begins_with("hey", 2));
+     * assert_not(str.begins_with("hey", 3));
+     * ```
+     */
+    inline bool begins_with(const char *needle, const size_t size) const {
+        assert(needle);
+        if (m_length < size)
+            return false;
+        return memcmp(m_str, needle, size) == 0;
+    }
+
+    /**
+     * Returns true if this String begins with the given character.
+     *
+     * ```
+     * const auto str = String { "hello world" };
+     * assert(str.begins_with('h'));
+     * assert_not(str.begins_with('w'));
+     * ```
+     */
+    bool begins_with(const char c) const {
+        return m_length > 0 && m_str[0] == c;
+    }
+
+    /**
      * Returns true if this String ends with the given String.
      *
      * ```
@@ -1595,7 +1655,7 @@ public:
 
     /**
      * Returns true if this String ends with the given C string, without
-     * converting it to a String first. Includes the size of the
+     * converting it to a String first.
      *
      * ```
      * const auto str = String { "hello world" };
@@ -1609,6 +1669,19 @@ public:
         if (m_length < size)
             return false;
         return memcmp(m_str + m_length - size, needle, size) == 0;
+    }
+
+    /**
+     * Returns true if this String ends with the given character.
+     *
+     * ```
+     * const auto str = String { "hello world" };
+     * assert(str.ends_with('d'));
+     * assert_not(str.ends_with('w'));
+     * ```
+     */
+    bool ends_with(const char c) const {
+        return m_length > 0 && m_str[m_length - 1] == c;
     }
 
     /**
