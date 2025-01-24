@@ -316,7 +316,7 @@ public:
     }
 
     /**
-     * Retruns true if the StringView has a length of zero.
+     * Returns true if the StringView has a length of zero.
      *
      * ```
      * auto str = String("abc");
