@@ -412,6 +412,23 @@ public:
     }
 
     /**
+     * Appends a second string to the first string, modifying the first
+     * string in place.
+     *
+     * ```
+     * auto str1 = String { "foo" };
+     * auto str2 = String { "bar" };
+     * str1 += str2;
+     *
+     * assert_str_eq("foobar", str1);
+     * ```
+     */
+    String &operator+=(const String &other) {
+        append(other);
+        return *this;
+    }
+
+    /**
      * Returns the character at the specified index.
      *
      * ```
