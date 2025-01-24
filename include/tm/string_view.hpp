@@ -312,7 +312,7 @@ public:
      */
     const char *dangerous_pointer_to_underlying_data() const {
         assert(m_string);
-        return (*m_string).c_str() + m_offset;
+        return m_string->c_str() + m_offset;
     }
 
     /**
