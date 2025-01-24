@@ -405,7 +405,8 @@ public:
      * assert_str_eq("12", String("1") + "2");
      * ```
      */
-    String operator+(const String &other) const {
+    template <class T>
+    String operator+(const T &other) const {
         auto new_string = String(*this);
         new_string.append(other);
         return new_string;
@@ -421,9 +422,14 @@ public:
      * str1 += str2;
      *
      * assert_str_eq("foobar", str1);
+     *
+     * auto str3 = String { "1" };
+     * str3 += "2";
+     * assert_str_eq("12", str3);
      * ```
      */
-    String &operator+=(const String &other) {
+    template <class T>
+    String &operator+=(const T &other) {
         append(other);
         return *this;
     }
