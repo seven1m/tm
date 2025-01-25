@@ -316,7 +316,7 @@ public:
     }
 
     /**
-     * Retruns true if the StringView has a length of zero.
+     * Returns true if the StringView has a length of zero.
      *
      * ```
      * auto str = String("abc");
@@ -333,5 +333,39 @@ private:
     size_t m_offset { 0 };
     size_t m_length { 0 };
 };
+
+/**
+ * Concatenate a StringView to a String without having to convert to
+ * StringView to a String first.
+ * ```
+ * const auto str1 = String { "abc" };
+ * const auto str2 = String { "cdefg" };
+ * const auto sv = StringView { &str2, 1, 3 };
+ *
+ * assert_str_eq("abcdef", str1 + sv);
+ * assert_str_eq("abc", str1);
+ * ```
+ */
+inline String operator+(const String &lhs, const StringView &rhs) {
+    auto res = lhs.clone();
+    res.append(rhs.dangerous_pointer_to_underlying_data(), rhs.size());
+    return res;
+}
+
+/**
+ * Append a StringView to a String without having to create a new String first
+ * ```
+ * auto str1 = String { "abc" };
+ * const auto str2 = String { "cdefg" };
+ * const auto sv = StringView { &str2, 1, 3 };
+ * str1 += sv;
+ *
+ * assert_str_eq("abcdef", str1);
+ * ```
+ */
+inline String &operator+=(String &lhs, const StringView &rhs) {
+    lhs.append(rhs.dangerous_pointer_to_underlying_data(), rhs.size());
+    return lhs;
+}
 
 }

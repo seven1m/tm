@@ -377,23 +377,6 @@ public:
     }
 
     /**
-     * Appends two Strings together and returns the result.
-     *
-     * ```
-     * auto str1 = String { "foo" };
-     * auto str2 = String { "bar" };
-     * assert_str_eq("foobar", str1 + str2);
-     *
-     * assert_str_eq("12", String("1") + "2");
-     * ```
-     */
-    String operator+(const String &other) const {
-        auto new_string = String(*this);
-        new_string.append(other);
-        return new_string;
-    }
-
-    /**
      * Replaces the String data by copying from an a C string.
      *
      * ```
@@ -408,6 +391,46 @@ public:
             return *this;
         }
         set_str(other);
+        return *this;
+    }
+
+    /**
+     * Appends two Strings together and returns the result.
+     *
+     * ```
+     * auto str1 = String { "foo" };
+     * auto str2 = String { "bar" };
+     * assert_str_eq("foobar", str1 + str2);
+     *
+     * assert_str_eq("12", String("1") + "2");
+     * ```
+     */
+    template <class T>
+    String operator+(const T &other) const {
+        auto new_string = String(*this);
+        new_string.append(other);
+        return new_string;
+    }
+
+    /**
+     * Appends a second string to the first string, modifying the first
+     * string in place.
+     *
+     * ```
+     * auto str1 = String { "foo" };
+     * auto str2 = String { "bar" };
+     * str1 += str2;
+     *
+     * assert_str_eq("foobar", str1);
+     *
+     * auto str3 = String { "1" };
+     * str3 += "2";
+     * assert_str_eq("12", str3);
+     * ```
+     */
+    template <class T>
+    String &operator+=(const T &other) {
+        append(other);
         return *this;
     }
 
@@ -1523,7 +1546,7 @@ public:
     static void format(String &out, const char *fmt, T first, Args... rest) {
         for (const char *c = fmt; *c != 0; c++) {
             if (*c == '{' && *(c + 1) == '}') {
-                out.append(first);
+                out += first;
                 format(out, c + 2, rest...);
                 return;
             } else {
@@ -1898,4 +1921,5 @@ protected:
     size_t m_length { 0 };
     size_t m_capacity { 0 };
 };
+
 }
