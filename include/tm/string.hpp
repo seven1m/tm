@@ -1546,7 +1546,7 @@ public:
     static void format(String &out, const char *fmt, T first, Args... rest) {
         for (const char *c = fmt; *c != 0; c++) {
             if (*c == '{' && *(c + 1) == '}') {
-                out.append(first);
+                out += first;
                 format(out, c + 2, rest...);
                 return;
             } else {
