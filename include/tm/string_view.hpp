@@ -181,6 +181,27 @@ public:
     }
 
     /**
+     * Returns true if this and the given character are equivalent.
+     *
+     * ```
+     * auto str = String("abc");
+     * auto view = StringView(&str, 1, 1);
+     * assert(view == 'b');
+     * assert_not(view == 'c');
+     *
+     * auto longerview = StringView(&str, 1, 2);
+     * assert_not(longerview == 'b');
+     * ```
+     */
+    bool operator==(const char other) const {
+        return m_length == 1 && (*m_string)[m_offset] == other;
+    }
+
+    bool operator!=(const char other) const {
+        return !(*this == other);
+    }
+
+    /**
      * Returns true if this and the given StringView are equivalent.
      *
      * ```
@@ -194,18 +215,27 @@ public:
      * assert_not(view1 == view2);
      *
      * assert(StringView() == StringView());
+     * assert(StringView() == StringView(&str2, 0, 0));
+     * assert(StringView(&str2, 0, 0) == StringView());
+     *
+     * auto str3 = String("abcabc");
+     * auto view3 = StringView(&str3, 0, 3);
+     * auto view3b = StringView(&str3, 3, 3);
+     * assert(view3 == view3b);
+     *
+     * auto view4 = StringView(&str3, 1, 2);
+     * auto view4b = StringView(&str3, 4, 2);
+     * assert(view4 == view4b);
      * ```
      */
     bool operator==(const StringView &other) const {
-        if (m_string == other.m_string) // shortcut
-            return m_offset == other.m_offset && m_length == other.m_length;
-        if (!m_string && other.m_length == 0)
-            return true;
-        if (!m_string)
-            return false;
         if (m_length != other.m_length)
             return false;
-        return memcmp(m_string->c_str() + m_offset, other.m_string->c_str(), sizeof(char) * m_length) == 0;
+        if (m_length == 0)
+            return true;
+        if (m_string == other.m_string && m_offset == other.m_offset) // shortcut
+            return true;
+        return memcmp(m_string->c_str() + m_offset, other.m_string->c_str() + other.m_offset, sizeof(char) * m_length) == 0;
     }
 
     bool operator!=(const StringView &other) const {
@@ -231,6 +261,70 @@ public:
     }
 
     /**
+     * Returns -1, 0, or 1 by comparing this StringView to the given StringView.
+     * -1 is returned if this StringView is alphanumerically less than the other one.
+     * 0 is returned if they are equivalent.
+     * 1 is returned if this StringView is alphanumerically greater than the other one.
+     *
+     * ```
+     * String str { "abcdef" };
+     * StringView sv1 { &str, 3, 3 };
+     * StringView sv2 { &str, 0, 3 };
+     * assert_eq(1, sv1.cmp(sv2));
+     * assert_eq(-1, sv2.cmp(sv1));
+     * String str2 { "abc" };
+     * StringView sv3 { &str2 };
+     * assert_eq(0, sv2.cmp(sv3));
+     * String str3 { "abcabc" };
+     * StringView sv4 { &str3 };
+     * assert_eq(-1, sv2.cmp(sv4));
+     * ```
+     */
+    int cmp(const StringView &other) const {
+        if (m_length == 0) {
+            if (other.m_length == 0)
+                return 0;
+            return -1;
+        }
+        for (size_t i = 0; i < std::min(m_length, other.m_length); ++i) {
+            const auto c1 = (unsigned char)(*this)[i], c2 = (unsigned char)other[i];
+            if (c1 < c2)
+                return -1;
+            else if (c1 > c2)
+                return 1;
+        }
+        if (m_length == other.m_length)
+            return 0;
+        else if (m_length < other.m_length)
+            return -1;
+        else
+            return 1;
+    }
+
+    /**
+     * Returns -1, 0, or 1 by comparing this StringView to the given String.
+     * -1 is returned if this StringView is alphanumerically less than the other one.
+     * 0 is returned if they are equivalent.
+     * 1 is returned if this StringView is alphanumerically greater than the other one.
+     *
+     * ```
+     * String str1 { "def" };
+     * String str2 { "abc" };
+     * StringView sv1 { &str1 };
+     * StringView sv2 { &str2 };
+     * assert_eq(1, sv1.cmp(str2));
+     * assert_eq(-1, sv2.cmp(str1));
+     * String str3 { "abc" };
+     * assert_eq(0, sv2.cmp(str3));
+     * String str4 { "abcabc" };
+     * assert_eq(-1, sv2.cmp(str4));
+     * ```
+     */
+    int cmp(const String &other) const {
+        return cmp(StringView { &other });
+    }
+
+    /**
      * Returns a new String constructed from this view.
      *
      * ```
@@ -244,6 +338,20 @@ public:
         if (!m_string)
             return String();
         return String { m_string->c_str() + m_offset, m_length };
+    }
+
+    /**
+     * Returns a new String constructed from this view.
+     *
+     * ```
+     * auto str = String("foo-bar-baz");
+     * auto view = StringView(&str, 4, 3);
+     * String str2 = view;
+     * assert_str_eq("bar", str2);
+     * ```
+     */
+    operator String() const {
+        return to_string();
     }
 
     /**

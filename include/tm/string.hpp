@@ -5,8 +5,10 @@
 #include <ctype.h>
 #include <limits.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <typeinfo>
 
 namespace TM {
 
@@ -111,7 +113,7 @@ public:
     }
 
     /**
-     * Constructs a new String with the single given charater.
+     * Constructs a new String with the single given character.
      *
      * ```
      * auto str = String { 'x' };
@@ -326,6 +328,10 @@ public:
         if (prefixed)
             str.prepend(uppercase ? "0X" : "0x");
         return str;
+    }
+
+    static String hex(const void *pointer, HexFormat format = HexFormat::UppercaseAndPrefixed) {
+        return hex(reinterpret_cast<long long>(pointer), format);
     }
 
     ~String() {
@@ -789,6 +795,27 @@ public:
      *
      * ```
      * auto str = String { "foo-bar-baz" };
+     * str.replace_bytes(4, 3, String { "buz" });
+     * assert_str_eq("foo-buz-baz", str);
+     * str.replace_bytes(4, 3, String { "b" });
+     * assert_str_eq("foo-b-baz", str);
+     * str.replace_bytes(4, 1, String { "bar" });
+     * assert_str_eq("foo-bar-baz", str);
+     * str.replace_bytes(10, 1, String { "a" });
+     * assert_str_eq("foo-bar-baa", str);
+     * str.replace_bytes(10, 1, String { "" });
+     * assert_str_eq("foo-bar-ba", str);
+     * ```
+     */
+    void replace_bytes(const size_t index, const size_t length, const String &replacement) {
+        replace_bytes(index, length, replacement.c_str(), replacement.size());
+    }
+
+    /**
+     * Replaces the specified index+size bytes with the C string given.
+     *
+     * ```
+     * auto str = String { "foo-bar-baz" };
      * str.replace_bytes(4, 3, "buz");
      * assert_str_eq("foo-buz-baz", str);
      * str.replace_bytes(4, 3, "b");
@@ -797,12 +824,18 @@ public:
      * assert_str_eq("foo-bar-baz", str);
      * str.replace_bytes(10, 1, "a");
      * assert_str_eq("foo-bar-baa", str);
+     * str.replace_bytes(10, 1, "");
+     * assert_str_eq("foo-bar-ba", str);
      * ```
      */
-    void replace_bytes(const size_t index, const size_t length, const String &replacement) {
+    void replace_bytes(const size_t index, const size_t length, const char *replacement) {
+        replace_bytes(index, length, replacement, strlen(replacement));
+    }
+
+    void replace_bytes(const size_t index, const size_t length, const char *replacement, const size_t replacement_size) {
         assert(index < m_length);
         assert(index + length <= m_length);
-        const ssize_t diff = replacement.size() - length;
+        const ssize_t diff = replacement_size - length;
         if (diff > 0)
             grow_at_least(m_length + diff);
         if (diff != 0) {
@@ -810,8 +843,7 @@ public:
             const auto dest = src + diff;
             memmove(m_str + dest, m_str + src, m_length - index - length);
         }
-        for (size_t i = 0; i < replacement.size(); i++)
-            m_str[index + i] = replacement[i];
+        memcpy(m_str + index, replacement, replacement_size);
         m_length += diff;
         m_str[m_length] = 0;
     }
@@ -831,6 +863,20 @@ public:
         m_str[total_length - 1] = c;
         m_str[total_length] = 0;
         m_length = total_length;
+    }
+
+    /**
+     * Adds the given character at the end of the string, the given number of times.
+     *
+     * ```
+     * String str;
+     * str.append_char('o', 3);
+     * assert_str_eq("ooo", str);
+     * ```
+     */
+    void append_char(const char c, size_t count) {
+        for (size_t i = 0; i < count; i++)
+            append_char(c);
     }
 
     /**
@@ -877,7 +923,7 @@ public:
     }
 
     /**
-     * Converts the given number and append the resulting string.
+     * Converts the given number and appends the resulting string.
      *
      * ```
      * auto str = String { "a" };
@@ -893,7 +939,7 @@ public:
     }
 
     /**
-     * Converts the given number and append the resulting string.
+     * Converts the given number and appends the resulting string.
      *
      * ```
      * auto str = String { "a" };
@@ -909,7 +955,7 @@ public:
     }
 
     /**
-     * Converts the given number and append the resulting string.
+     * Converts the given number and appends the resulting string.
      *
      * ```
      * auto str = String { "a" };
@@ -925,7 +971,7 @@ public:
     }
 
     /**
-     * Converts the given number and append the resulting string.
+     * Converts the given number and appends the resulting string.
      *
      * ```
      * auto str = String { "a" };
@@ -937,6 +983,22 @@ public:
         const int length = snprintf(NULL, 0, "%i", i);
         char buf[length + 1];
         snprintf(buf, length + 1, "%i", i);
+        append(buf);
+    }
+
+    /**
+     * Converts the given number and appends the resulting string.
+     *
+     * ```
+     * String str;
+     * str.append(1.1);
+     * assert_str_eq("1.1", str);
+     * ```
+     */
+    void append(const double d) {
+        const int length = snprintf(NULL, 0, "%g", d);
+        char buf[length + 1];
+        snprintf(buf, length + 1, "%f", d);
         append(buf);
     }
 
@@ -1453,6 +1515,29 @@ public:
     }
 
     /**
+     * Grow the capacity (allocated memory) of the string.
+     *
+     * ```
+     * auto str = String { "abc" };
+     * str.set_capacity(100);
+     * assert_eq(100, str.capacity());
+     * assert_eq(3, str.size());
+     * ```
+     *
+     * It does not change the capacity if the new capacity is smaller than the current size
+     *
+     * ```
+     * auto str = String { "abc" };
+     * str.set_capacity(1);
+     * assert_eq(3, str.capacity());
+     * assert_eq(3, str.size());
+     * ```
+     */
+    void set_capacity(size_t new_size) {
+        grow_at_least(new_size);
+    }
+
+    /**
      * Retruns true if the String has a length of zero.
      *
      * ```
@@ -1545,10 +1630,24 @@ public:
     template <typename T, typename... Args>
     static void format(String &out, const char *fmt, T first, Args... rest) {
         for (const char *c = fmt; *c != 0; c++) {
-            if (*c == '{' && *(c + 1) == '}') {
-                out += first;
-                format(out, c + 2, rest...);
-                return;
+            if (*c == '{' && *(c + 1) == 'h' && *(c + 2) == '}') {
+                if constexpr (std::is_arithmetic<T>::value || std::is_pointer<T>::value) {
+                    out += hex(first, HexFormat::LowercaseAndPrefixed);
+                    format(out, c + 3, rest...);
+                    return;
+                } else {
+                    fprintf(stderr, "String::format: T is not a pointer or an arithmetic type\n");
+                    abort();
+                }
+            } else if (*c == '{' && *(c + 1) == '}') {
+                if constexpr (std::is_pointer<T>::value && !std::is_same<const char *, T>::value && !std::is_same<char *, T>::value) {
+                    fprintf(stderr, "String::format: T is a general pointer type but you didn't specify {h}\n");
+                    abort();
+                } else {
+                    out += first;
+                    format(out, c + 2, rest...);
+                    return;
+                }
             } else {
                 out.append_char(*c);
             }
@@ -1705,25 +1804,6 @@ public:
      */
     bool ends_with(const char c) const {
         return m_length > 0 && m_str[m_length - 1] == c;
-    }
-
-    /**
-     * Returns hash value of this String.
-     * This uses the 'djb2' hash algorithm by Dan Bernstein.
-     *
-     * ```
-     * auto str = String("hello");
-     * assert_eq(210714636441, str.djb2_hash());
-     * ```
-     */
-    size_t djb2_hash() const {
-        size_t hash = 5381;
-        int c;
-        for (size_t i = 0; i < m_length; ++i) {
-            c = (*this)[i];
-            hash = ((hash << 5) + hash) + c;
-        }
-        return hash;
     }
 
     /**

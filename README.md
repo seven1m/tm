@@ -1,11 +1,16 @@
 # TM
 
-Some simple C++ data structures that compile fast.
+Some simple C++ data structures that work the way I want. Because I'm picky. :-)
+
+NOTE: This repo isn't the "upstream" source.
+[Look here](https://github.com/natalie-lang/natalie/tree/master/ext/tm) for
+possibly more up-to-date code.
+
 
 ## Why should I use this?
 
 If the C++ STL data structures work for you, then you probably shouldn't use this.
-We use them for [Natalie](https://github.com/natalie-lang/natalie) to keep compilation times down.
+We use them for [Natalie](https://github.com/natalie-lang/natalie).
 
 ## Copyright & License
 
