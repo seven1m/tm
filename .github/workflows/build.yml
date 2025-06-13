@@ -12,9 +12,9 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: checkout submodules
         run: git submodule update --init --recursive
       - name: test with gcc
