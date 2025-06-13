@@ -14,5 +14,5 @@ We use them for [Natalie](https://github.com/natalie-lang/natalie).
 
 ## Copyright & License
 
-These libraries are copyright 2022, Tim Morgan and contributors, and are licensed
+These libraries are copyright 2025, Tim Morgan and contributors, and are licensed
 under the MIT License; see the `LICENSE` file in this directory for the full text.
